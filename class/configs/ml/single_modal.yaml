@@ -1,0 +1,19 @@
+dataset_config: class/configs/dataset/dataset.yaml
+seed: [0, 1, 2, 3, 4]
+
+feature_cache_dir: cache/class
+
+output_csv: class/results/tables/single_modal_ml.csv
+all_results_csv: class/results/tables/all_results.csv
+
+modalities: [audio, accel, gelsight, visual]
+
+average: macro
+
+xgboost:
+  n_estimators: 500
+  max_depth: [4, 6]
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  early_stopping_rounds: 30

@@ -1,0 +1,34 @@
+dataset_config: interaction/configs/dataset/interaction_dataset.yaml
+task_name: slide_trajectory
+evaluation_mode: fixed_trial_split
+target_label: slide_trajectory
+
+modality_combos:
+  - [audio]
+  - [accel]
+  - [gelsight]
+  - [audio, accel]
+  - [audio, gelsight]
+  - [accel, gelsight]
+  - [audio, accel, gelsight]
+
+seed: [0, 1, 2, 3, 4]
+feature_cache_dir: cache/interaction
+model_dir: checkpoints/interaction/slide_trajectory/ml
+
+output_csv: interaction/results/tables/slide_trajectory/xgboost.csv
+all_results_csv: interaction/results/tables/all_interaction_results.csv
+
+classifier: xgboost
+fusion: feature_concat
+average: macro
+
+xgboost:
+  n_estimators: 500
+  max_depth: 4
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  objective: multi:softprob
+  eval_metric: mlogloss
+  early_stopping_rounds: 30

@@ -1,0 +1,75 @@
+preprocessed_root: preprocessed_data/interaction
+
+offline:
+  temporal_pattern: temporal_{split}.h5
+  gelsight_pattern: gelsight_{split}.pt
+  trial_manifest: trial_split_manifest.csv
+  pairing_seed: 20260730
+
+seed: 42
+
+window:
+  length_sec: 0.5
+  overlap: 0.5
+  min_coverage: 0.5
+
+audio:
+  sample_rate: 44100
+  n_mels: 64
+  n_fft: 1024
+  hop_length: 256
+  win_length: 1024
+  top_db: 80.0
+
+accel:
+  sample_rate: 3000
+  channels: 3
+
+gelsight:
+  image_size: 224
+  frames_per_window: 3
+  selection_seed: 20260730
+
+modalities: [audio, accel, gelsight]
+
+features:
+  cache_dir: cache/interaction
+  save_hdf5: true
+  enable_pca: false
+  pca_components: 128
+
+feature_exports:
+  enabled: true
+  output_dir: interaction/results/features
+  save_csv: true
+  save_hdf5: true
+  save_parquet: false
+  save_feature_manifest: true
+  save_config_snapshot: true
+
+missing_modalities:
+  policy: skip
+
+tasks:
+  - name: primitive
+    fabric_id: 32
+    target_label: primitive
+    evaluation_mode: fixed_trial_split
+
+  - name: press_angle
+    fabric_id: 164
+    target_label: press_angle
+    evaluation_mode: fixed_trial_split
+
+  - name: slide_trajectory
+    fabric_id: 213
+    target_label: slide_trajectory
+    evaluation_mode: fixed_trial_split
+
+  - name: twist_position
+    fabric_id: 247
+    target_label: twist_position
+    evaluation_mode: fixed_trial_split
+
+output:
+  split_dir: interaction/results/splits

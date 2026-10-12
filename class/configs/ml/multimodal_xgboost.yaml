@@ -1,0 +1,42 @@
+dataset_config: class/configs/dataset/dataset.yaml
+seed: [0, 1, 2, 3, 4]
+feature_cache_dir: cache/class
+
+output_csv: class/results/tables/multimodal_ml_xgboost.csv
+all_results_csv: class/results/tables/all_results.csv
+average: macro
+
+classifier: xgboost
+fusion: feature_concat
+
+modality_combos:
+  - [audio]
+  - [accel]
+  - [gelsight]
+  - [visual]
+
+  - [audio, accel]
+  - [audio, gelsight]
+  - [audio, visual]
+  - [accel, gelsight]
+  - [accel, visual]
+  - [gelsight, visual]
+
+  - [audio, accel, gelsight]
+  - [audio, accel, visual]
+  - [audio, gelsight, visual]
+  - [accel, gelsight, visual]
+
+  - [audio, accel, gelsight, visual]
+
+xgboost:
+  n_estimators: 500
+  max_depth: 4
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+
+  objective: multi:softprob
+  eval_metric: mlogloss
+
+  early_stopping_rounds: 30

@@ -1,0 +1,86 @@
+dataset_config: interaction/configs/dataset/interaction_dataset.yaml
+task_name: slide_trajectory
+evaluation_mode: fixed_trial_split
+target_label: slide_trajectory
+
+seed: [0, 1, 2, 3, 4]
+
+output_csv: interaction/results/tables/slide_trajectory/deep.csv
+all_results_csv: interaction/results/tables/all_interaction_results.csv
+checkpoint_dir: checkpoints/interaction/slide_trajectory/deep
+log_dir: logs/tensorboard/interaction/slide_trajectory
+
+accelerator: auto
+devices: auto
+precision: 32-true
+deterministic: true
+log_every_n_steps: 10
+
+resume:
+  auto: true
+  path: null
+
+batch_size: 32
+num_workers: 16
+epochs: 100
+early_stopping_patience: 15
+learning_rate: 0.0003
+weight_decay: 0.0001
+scheduler: reduce_on_plateau
+scheduler_patience: 5
+class_weighted_loss: true
+
+average: macro
+trial_aggregation: average_logits
+
+model:
+  feature_dim: 256
+
+  modalities:
+    audio:
+      encoder: lstm
+    accel:
+      encoder: tcn
+      normalization: zscore
+      normalization_epsilon: 1.0e-8
+    gelsight:
+      encoder: efficientnet_b0
+
+  temporal:
+    tcn:
+      hidden_channels: [64, 128, 256]
+      kernel_size: 3
+      dropout: 0.2
+      dilations: [1, 2, 4, 8]
+
+    lstm:
+      hidden_size: 128
+      num_layers: 2
+      dropout: 0.2
+      bidirectional: true
+
+  image:
+    efficientnet_b0:
+      pretrained: true
+      dropout: 0.0
+
+  classifier:
+    hidden_dims: [512, 256]
+    dropout: 0.3
+    use_batch_norm: true
+
+modality_combos:
+  - [audio]
+  - [accel]
+  - [gelsight]
+  - [audio, accel]
+  - [audio, gelsight]
+  - [accel, gelsight]
+  - [audio, accel, gelsight]
+
+fusion: late_concat
+
+augment:
+  audio_specaugment: false
+  accel_jitter: false
+  image_train_augment: true

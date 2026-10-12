@@ -1,0 +1,109 @@
+dataset_config: class/configs/dataset/dataset.yaml
+seed: [0, 1, 2, 3, 4]
+
+output_csv: class/results/tables/single_modal_deep.csv
+all_results_csv: class/results/tables/all_results.csv
+checkpoint_dir: checkpoints/class
+log_dir: logs/tensorboard/class
+
+accelerator: auto
+devices: auto
+precision: 32-true
+deterministic: true
+log_every_n_steps: 10
+
+resume:
+  auto: true
+  path: null
+
+batch_size: 32
+num_workers: 16
+epochs: 100
+early_stopping_patience: 15
+learning_rate: 0.0003
+weight_decay: 0.0001
+scheduler: reduce_on_plateau
+scheduler_patience: 5
+class_weighted_loss: true
+
+average: macro
+trial_aggregation: average_logits
+
+model:
+  feature_dim: 256
+
+  temporal_encoder: lstm
+  image_encoder: efficientnet_b0
+
+  modalities:
+    audio:
+      encoder: lstm
+    accel:
+      encoder: tcn
+      normalization: zscore
+      normalization_epsilon: 1.0e-8
+    gelsight:
+      encoder: efficientnet_b0
+    visual:
+      encoder: efficientnet_b0
+
+  temporal:
+    tcn:
+      hidden_channels: [64, 128, 256]
+      kernel_size: 3
+      dropout: 0.2
+      dilations: [1, 2, 4, 8]
+
+    lstm:
+      hidden_size: 128
+      num_layers: 2
+      dropout: 0.2
+      bidirectional: true
+
+    inception_time:
+      num_blocks: 6
+      branch_channels: 32
+      bottleneck_channels: 32
+      kernel_sizes: [9, 19, 39]
+      dropout: 0.1
+      residual_every: 3
+
+  image:
+    resnet18:
+      pretrained: true
+      dropout: 0.0
+
+    efficientnet_b0:
+      pretrained: true
+      dropout: 0.0
+
+    mobilenet_v3:
+      pretrained: true
+      dropout: 0.0
+
+  classifier:
+    hidden_dims: [512, 256]
+    dropout: 0.3
+    use_batch_norm: true
+
+experiments:
+  - name: DL-Single-Audio-LSTM
+    modality: audio
+    encoder: lstm
+
+  - name: DL-Single-Accel-TCN
+    modality: accel
+    encoder: tcn
+
+  - name: DL-Single-GelSight-EfficientNetB0
+    modality: gelsight
+    encoder: efficientnet_b0
+
+  - name: DL-Single-Visual-EfficientNetB0
+    modality: visual
+    encoder: efficientnet_b0
+
+augment:
+  audio_specaugment: false
+  accel_jitter: false
+  image_train_augment: true
